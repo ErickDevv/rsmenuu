@@ -1,6 +1,6 @@
 # rsmenuu
 
-## rsmenuu is a Rust library that allows you to easily create menus on your terminal.
+## rsmenuu is a Rust library that allows you to easily create menus on your terminal
 
 ### **Installation**
 
