@@ -4,13 +4,16 @@
 
 ### Installation
 
-Add this to your `Cargo.toml`:
+Add to the dependencies section of your Cargo.toml file:
 
 ```toml
 rsmenuu = { git = "https://github.com/ErickDevv/rsmenuu" }
 ```
 
-### Usage
+### **Example of use:**
+
+#### *Code:*
+
 
 ```rust
 use rsmenuu::create_menu;
@@ -23,3 +26,6 @@ fn main() {
     println!("Selected: {}", menu.index);
 }
 ```
+#### *Output:*
+
+<img src="./rsmenuu.png" width="250px"/>
