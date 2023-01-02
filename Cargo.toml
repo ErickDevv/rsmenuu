@@ -3,7 +3,7 @@ name = "rsmenuu"
 version = "0.1.0"
 edition = "2021"
 authors = ["ErickDevv"]
-description = "Create easy menus in your terminal with rust"
+description = "Create menus easily on your terminal using Rust"
 license = "MIT"
 
 [dependencies]
