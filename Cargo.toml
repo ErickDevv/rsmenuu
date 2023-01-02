@@ -1,0 +1,10 @@
+[package]
+name = "rsmenuu"
+version = "0.1.0"
+edition = "2021"
+authors = ["ErickDevv"]
+description = "Create easy menus in your terminal with rust"
+license = "MIT"
+
+[dependencies]
+ncurses = "5.101.0"
