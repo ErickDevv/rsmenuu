@@ -1,8 +1,8 @@
 # rsmenuu
 
-## Create menus easily on your terminal using Rust
+## rsmenuu is a Rust library that allows you to create menus easily in your terminal
 
-### Installation
+### **Installation**
 
 Add to the dependencies section of your Cargo.toml file:
 
@@ -10,10 +10,9 @@ Add to the dependencies section of your Cargo.toml file:
 rsmenuu = { git = "https://github.com/ErickDevv/rsmenuu" }
 ```
 
-### **Example of use:**
+### **Example of use**
 
 #### *Code:*
-
 
 ```rust
 use rsmenuu::create_menu;
@@ -26,6 +25,7 @@ fn main() {
     println!("Selected: {}", menu.index);
 }
 ```
+
 #### *Output:*
 
 <img src="./rsmenuu.png" width="250px"/>
