@@ -19,7 +19,9 @@ pub fn create_menu(title: &str, options: Vec<&str>, keys: Vec<char>) -> MenuResu
 
     while repead == true {
         clear();
-        addstr(title);
+        let t: String = " ".to_string() + title + "\n " + "-".repeat(title.len()).as_str();
+        addstr(&t);
+
         for (index, option) in options.iter().enumerate() {
             addstr("\n");
             if index == selected {
