@@ -1,8 +1,10 @@
 # rsmenuu
 
-## rsmenuu is a Rust library that allows you to easily create menus on your terminal
+## **Easily create menus** on your terminal using ***Rust***
 
-### **Installation**
+![rsmenuu](./rsmenuu.png)
+
+## **Installation**
 
 Add to the dependencies section of your Cargo.toml file:
 
@@ -12,20 +14,24 @@ rsmenuu = { git = "https://github.com/ErickDevv/rsmenuu" }
 
 ### **Example of use**
 
-#### *Code:*
-
 ```rust
+use rand::Rng;
 use rsmenuu::create_menu;
+use rsmenuu::Key;
 use rsmenuu::MenuResult;
 
 fn main() {
     let options: Vec<&str> = vec!["Option 1", "Option 2", "Option 3"];
-    let keys: Vec<char> = vec!['h'];
-    let menu: MenuResult = create_menu("Title", options, keys);
-    println!("Selected: {}", menu.index);
+    let keys: Vec<Key> = vec![Key {
+        key: 'r',
+        description: String::from("Press r to generate a random boolean"),
+    }];
+    let menu_results: MenuResult = create_menu("Hello, this is the title!", options, keys, true);
+
+    println!("Selected: {}", menu_results.index);
+
+    if menu_results.key == 'r' {
+        println!("Random Boolean: {}", rand::thread_rng().gen::<bool>());
+    }
 }
 ```
-
-#### *Output:*
-
-<img src="./rsmenuu.png" width="250px"/>
