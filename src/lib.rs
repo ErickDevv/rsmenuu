@@ -77,7 +77,7 @@ pub fn create_menu(
 
         if instructions == true {
             attron(COLOR_PAIR(4));
-            let instructions = "- Use W and S to move up and down, D to select and A to exit";
+            let instructions = "- Use W and S to move up and down, and D to select";
             addstr(instructions);
             addstr("\n");
             attroff(COLOR_PAIR(4));
