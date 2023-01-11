@@ -2,8 +2,6 @@
 
 ## **Easily create menus** on your terminal using ***Rust***
 
-![rsmenuu](./rsmenuu.png)
-
 ## **Installation**
 
 Add to the dependencies section of your Cargo.toml file:
