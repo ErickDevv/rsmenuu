@@ -13,23 +13,18 @@ rsmenuu = { git = "https://github.com/ErickDevv/rsmenuu" }
 ### **Example of use**
 
 ```rust
-use rand::Rng;
 use rsmenuu::create_menu;
-use rsmenuu::Key;
 use rsmenuu::MenuResult;
 
 fn main() {
-    let options: Vec<&str> = vec!["Option 1", "Option 2", "Option 3"];
-    let keys: Vec<Key> = vec![Key {
-        key: 'r',
-        description: String::from("Press r to generate a random boolean"),
-    }];
-    let menu_results: MenuResult = create_menu("Hello, this is the title!", options, keys, true);
+   let options: Vec<&str> = vec!["Option 1", "Option2"];
 
-    println!("Selected: {}", menu_results.index);
-
-    if menu_results.key == 'r' {
-        println!("Random Boolean: {}", rand::thread_rng().gen::<bool>());
-    }
+    let menu_results: MenuResult = create_menu!(
+        "Menu",
+        "Select an option",
+        vec!["Press 'e' to exit"],
+        options,
+        vec!['e']
+    );
 }
 ```

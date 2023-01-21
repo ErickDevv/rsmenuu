@@ -1,5 +1,3 @@
-use ncurses::addstr;
-use ncurses::attroff;
 use ncurses::attron;
 use ncurses::clear;
 use ncurses::curs_set;
@@ -7,45 +5,30 @@ use ncurses::endwin;
 use ncurses::getch;
 use ncurses::init_pair;
 use ncurses::initscr;
+use ncurses::mv;
 use ncurses::noecho;
 use ncurses::start_color;
-use ncurses::A_BOLD;
-use ncurses::A_ITALIC;
-use ncurses::A_UNDERLINE;
-use ncurses::COLOR_BLACK;
-use ncurses::COLOR_GREEN;
-use ncurses::COLOR_MAGENTA;
+use ncurses::stdscr;
 use ncurses::COLOR_PAIR;
-use ncurses::COLOR_WHITE;
 use ncurses::CURSOR_VISIBILITY;
+use ncurses::{addstr, attroff};
+use ncurses::{getmaxx, getmaxy};
+use ncurses::{A_BOLD, A_ITALIC, A_UNDERLINE};
+use ncurses::{COLOR_BLACK, COLOR_GREEN, COLOR_MAGENTA, COLOR_WHITE};
 
 pub struct MenuResult {
-    pub index: usize,
+    pub selected: usize,
     pub key: char,
 }
 
-pub struct Key {
-    pub key: char,
-    pub description: String,
-}
-
-pub fn instructions_off() -> Vec<Key> {
-    let vec: Vec<Key> = vec![Key {
-        key: ' ',
-        description: String::from(""),
-    }];
-    vec
-}
-
-pub fn create_menu(
+pub fn generate_menu(
     title: &str,
+    description: &str,
     options: Vec<&str>,
-    keys: Vec<Key>,
-    instructions: bool,
+    instructions: Vec<&str>,
+    keys: Vec<char>,
 ) -> MenuResult {
     let mut selected = 0;
-
-    let mut key: char = ' ';
 
     let mut repead = true;
 
@@ -63,91 +46,115 @@ pub fn create_menu(
 
     attron(A_BOLD());
 
-    let max_caracters = options.iter().map(|x| x.len()).max().unwrap();
-    let title_len = title.len();
+    let max_x = getmaxx(stdscr());
+    let max_y = getmaxy(stdscr());
 
-    let max_len = if max_caracters > title_len {
-        max_caracters + 4
-    } else {
-        title_len + 4
-    };
+    let title_len = title.len();
+    let desciption_len = description.len();
+    let instructions_len = instructions.iter().map(|x| x.len()).max().unwrap();
+    let options_len = options.iter().map(|x| x.len()).max().unwrap();
+
+    let space: usize = 6;
+
+    let max_len =
+        if title_len > desciption_len && title_len > instructions_len && title_len > options_len {
+            title_len + space
+        } else if desciption_len > title_len
+            && desciption_len > instructions_len
+            && desciption_len > options_len
+        {
+            desciption_len + space
+        } else if instructions_len > title_len
+            && instructions_len > desciption_len
+            && instructions_len > options_len
+        {
+            instructions_len + space
+        } else {
+            options_len + space
+        };
+
+    let mut key: char = ' ';
 
     while repead == true {
         clear();
 
-        if instructions == true {
-            attron(COLOR_PAIR(4));
-            let instructions = "- Use W and S to move up and down, and D to select";
-            addstr(instructions);
-            addstr("\n");
-            attroff(COLOR_PAIR(4));
+        let mut center_count: i32 = -1;
+
+        macro_rules! center {
+            () => {{
+                center_count = center_count + 1;
+                mv(
+                    (max_y / 2) - ((options.len() as i32 / 2) + 2) + center_count,
+                    (max_x / 2) - (max_len as i32 / 2) - 1,
+                );
+            }};
         }
 
-        for key_bucle in keys.iter() {
-            let instr_off = instructions_off();
-
-            if key_bucle.key != instr_off[0].key {
-                attron(COLOR_PAIR(4));
-                addstr("- ");
-                addstr(&key_bucle.description);
-                addstr("\n");
-                attroff(COLOR_PAIR(4));
-            }
-        }
-
-        create_divider(max_len);
+        center!();
+        generate_divider(max_len);
 
         addstr("\n");
 
-        create_title(title, max_len);
+        center!();
+        generate_title(title, max_len);
+
+        addstr("\n");
+        center!();
+        generate_description(description, max_len);
 
         addstr("\n");
 
-        create_divider(max_len);
+        for instruction in instructions.iter() {
+            center!();
+            generate_instruction(instruction, max_len);
+        }
+
+        center!();
+        generate_divider(max_len);
 
         for (index, option) in options.iter().enumerate() {
             addstr("\n");
 
             if index == selected {
-                create_option(option, max_len, true);
+                center!();
+                generate_option(option, max_len, true);
             } else {
-                create_option(option, max_len, false);
+                center!();
+                generate_option(option, max_len, false);
             }
         }
 
         addstr("\n");
-        create_divider(max_len);
+        center!();
+        generate_divider(max_len);
 
-        let k = getch() as u8 as char;
+        key = getch() as u8 as char;
 
-        if k == 'A' || k == 'a' {
-            repead = false;
-        } else if k == 'W' || k == 'w' && selected > 0 {
+        if key == 'W' || key == 'w' && selected > 0 {
             selected -= 1;
             repead = true;
-        } else if k == 'S' || k == 's' && selected < options.len() - 1 {
+        } else if key == 'S' || key == 's' && selected < options.len() - 1 {
             selected += 1;
             repead = true;
-        } else if k == 'D' || k == 'd' {
+        } else if key == 'D' || key == 'd' {
             repead = false;
         } else {
-            for key_blucle in keys.iter() {
-                if k == key_blucle.key {
-                    key = k;
-                    repead = false;
-                }
+            repead = true;
+        }
+
+        for k in keys.iter() {
+            if *k == key {
+                repead = false;
             }
         }
     }
 
     endwin();
-    MenuResult {
-        index: selected,
-        key: key,
-    }
+
+    MenuResult { selected, key }
 }
 
-fn create_divider(max_len: usize) {
+pub fn generate_divider(max_len: usize) {
     attron(COLOR_PAIR(2));
     addstr("+");
     attron(COLOR_PAIR(1));
@@ -161,7 +168,7 @@ fn create_divider(max_len: usize) {
     attron(COLOR_PAIR(1));
 }
 
-fn create_title(title: &str, max_len: usize) {
+pub fn generate_title(title: &str, max_len: usize) {
     addstr("|");
 
     let title_len = title.len();
@@ -186,7 +193,50 @@ fn create_title(title: &str, max_len: usize) {
     addstr("|");
 }
 
-fn create_option(option: &str, max_len: usize, selected: bool) {
+pub fn generate_description(description: &str, max_len: usize) {
+    let description_len = description.len();
+    let spaces = max_len - description_len;
+
+    addstr("|");
+
+    for _ in 0..spaces / 2 {
+        addstr(" ");
+    }
+
+    attron(COLOR_PAIR(4));
+    addstr(description);
+    attron(COLOR_PAIR(1));
+
+    for _ in 0..(spaces / 2) + (spaces % 2) {
+        addstr(" ");
+    }
+
+    addstr("|");
+}
+
+pub fn generate_instruction(instruction: &str, max_len: usize) {
+    let instruction_len = instruction.len();
+    let spaces = max_len - instruction_len;
+
+    addstr("|");
+
+    addstr(" -");
+    attron(COLOR_PAIR(4));
+    addstr(instruction);
+    attron(COLOR_PAIR(1));
+
+    for _ in 0..(spaces / 2) + (spaces % 2) {
+        addstr(" ");
+    }
+
+    for _ in 0..(spaces - 3 - (spaces % 2)) / 2 {
+        addstr(" ");
+    }
+
+    addstr("|");
+}
+
+pub fn generate_option(option: &str, max_len: usize, selected: bool) {
     addstr("|");
 
     let option_len = option.len();
@@ -207,4 +257,17 @@ fn create_option(option: &str, max_len: usize, selected: bool) {
     }
 
     addstr("|");
+}
+
+#[macro_export]
+macro_rules! create_menu {
+    ($title:expr, $description:expr, $instructions:expr, $options:expr, $keys:expr) => {{
+        use rsmenuu::generate_menu;
+        use rsmenuu::MenuResult;
+
+        let menu_result: MenuResult =
+            generate_menu($title, $description, $options, $instructions, $keys);
+
+        menu_result
+    }};
 }
