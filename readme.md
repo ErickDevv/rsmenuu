@@ -17,7 +17,7 @@ use rsmenuu::create_menu;
 use rsmenuu::MenuResult;
 
 fn main() {
-   let options: Vec<&str> = vec!["Option 1", "Option2"];
+   let options: Vec<&str> = vec!["Option 1", "Option 2"];
 
     let menu_results: MenuResult = create_menu!(
         "Menu",
