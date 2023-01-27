@@ -27,6 +27,7 @@ pub fn generate_menu(
     options: Vec<&str>,
     instructions: Vec<&str>,
     keys: Vec<char>,
+    align: &str,
 ) -> MenuResult {
     let mut selected = 0;
 
@@ -117,10 +118,10 @@ pub fn generate_menu(
 
             if index == selected {
                 center!();
-                generate_option(option, max_len, true);
+                generate_option(option, max_len, true, align);
             } else {
                 center!();
-                generate_option(option, max_len, false);
+                generate_option(option, max_len, false, align);
             }
         }
 
@@ -236,13 +237,17 @@ pub fn generate_instruction(instruction: &str, max_len: usize) {
     addstr("|");
 }
 
-pub fn generate_option(option: &str, max_len: usize, selected: bool) {
+pub fn generate_option(option: &str, max_len: usize, selected: bool, align: &str) {
     addstr("|");
 
     let option_len = option.len();
     let spaces = max_len - option_len;
 
-    for _ in 0..spaces / 2 {
+    if align == "center" {
+        for _ in 0..spaces / 2 {
+            addstr(" ");
+        }
+    } else if align == "left" {
         addstr(" ");
     }
 
@@ -252,8 +257,14 @@ pub fn generate_option(option: &str, max_len: usize, selected: bool) {
     addstr(option);
     attron(COLOR_PAIR(1));
 
-    for _ in 0..(spaces / 2) + (spaces % 2) {
-        addstr(" ");
+    if align == "center" {
+        for _ in 0..(spaces / 2) + (spaces % 2) {
+            addstr(" ");
+        }
+    } else if align == "left" {
+        for _ in 0..(spaces - 1) {
+            addstr(" ");
+        }
     }
 
     addstr("|");
@@ -265,8 +276,24 @@ macro_rules! create_menu {
         use rsmenuu::generate_menu;
         use rsmenuu::MenuResult;
 
+        let menu_result: MenuResult = generate_menu(
+            $title,
+            $description,
+            $options,
+            $instructions,
+            $keys,
+            "center",
+        );
+
+        menu_result
+    }};
+
+    ($title:expr, $description:expr, $instructions:expr, $options:expr, $keys:expr, $align:expr) => {{
+        use rsmenuu::generate_menu;
+        use rsmenuu::MenuResult;
+
         let menu_result: MenuResult =
-            generate_menu($title, $description, $options, $instructions, $keys);
+            generate_menu($title, $description, $options, $instructions, $keys, $align);
 
         menu_result
     }};
