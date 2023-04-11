@@ -1,6 +1,6 @@
 # rsmenuu
 
-## **Easily create menus** on your terminal using ***Rust***
+## **Easily create menus** on your terminal.
 
 ## **Installation**
 
